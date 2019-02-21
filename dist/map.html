@@ -1,0 +1,114 @@
+<!DOCTYPE html>
+<html>
+<head>
+<link rel="stylesheet" href="https://static.fly2x.com/semanticui/semantic.min.css">
+</head>
+ 
+<body>
+    <div class="ui container">
+        <div class="ui fluid segment" style="height: 800px">
+                <div id="googleMap" style="width:100%;height:100%;"></div>
+        </div>
+    </div>
+
+
+
+<script src="https://static.fly2x.com/js/jquery-3.3.1.min.js"></script>
+<script>
+var api_key='AIzaSyCAr0SYZ3yV8Iwm0WyyQ1dArg1TYgA-Pv0';
+var coordinates=[{"name":"兰州","coordinate":{"lat":36.061089,"lng":103.834303}},{"name":"长沙","coordinate":{"lat":28.228209,"lng":112.938814}},{"name":"杭州","coordinate":{"lat":30.274084,"lng":120.15507}},{"name":"拉萨","coordinate":{"lat":29.65483799999999,"lng":91.140552}},{"name":"郑州","coordinate":{"lat":34.746611,"lng":113.625328}},{"name":"广州","coordinate":{"lat":23.12911,"lng":113.264385}},{"name":"济南","coordinate":{"lat":36.6512,"lng":117.120095}},{"name":"重庆","coordinate":{"lat":29.4315861,"lng":106.912251}},{"name":"福州","coordinate":{"lat":26.074478,"lng":119.296482}},{"name":"北京","coordinate":{"lat":39.90419989999999,"lng":116.4073963}},{"name":"成都","coordinate":{"lat":30.572815,"lng":104.066801}},{"name":"宁夏","coordinate":{"lat":37.198731,"lng":106.1580937}},{"name":"乌鲁木齐","coordinate":{"lat":43.825592,"lng":87.61684799999999}},{"name":"合肥","coordinate":{"lat":31.820591,"lng":117.227219}},{"name":"宁波","coordinate":{"lat":29.868336,"lng":121.54399}},{"name":"西安","coordinate":{"lat":34.341574,"lng":108.93977}},{"name":"南京","coordinate":{"lat":32.060255,"lng":118.796877}},{"name":"武汉","coordinate":{"lat":30.592849,"lng":114.305539}},{"name":"上海","coordinate":{"lat":31.2303904,"lng":121.4737021}},{"name":"呼和浩特","coordinate":{"lat":40.842356,"lng":111.749995}},{"name":"天津","coordinate":{"lat":39.3433574,"lng":117.3616476}},{"name":"哈尔滨","coordinate":{"lat":45.80377499999999,"lng":126.534967}},{"name":"苏州","coordinate":{"lat":31.298974,"lng":120.585289}},{"name":"西宁","coordinate":{"lat":36.617134,"lng":101.778223}},{"name":"长春","coordinate":{"lat":43.817071,"lng":125.323544}}];
+var ping_result=[{"latency":210.213,"name":"兰州"},{"latency":165.192,"name":"北京"},{"latency":173.731,"name":"武汉"},{"latency":198.16,"name":"长沙"},{"latency":183.047,"name":"成都"},{"latency":190.148,"name":"上海"},{"latency":182.78,"name":"杭州"},{"latency":210.903,"name":"宁夏"},{"latency":193.484,"name":"呼和浩特"},{"latency":228.167,"name":"拉萨"},{"latency":234.881,"name":"乌鲁木齐"},{"latency":170.733,"name":"天津"},{"latency":177.781,"name":"郑州"},{"latency":176.681,"name":"合肥"},{"latency":197.88,"name":"哈尔滨"},{"latency":147.264,"name":"广州"},{"latency":158.891,"name":"宁波"},{"latency":151.864,"name":"苏州"},{"latency":203.503,"name":"济南"},{"latency":209.302,"name":"西安"},{"latency":203.374,"name":"西宁"},{"latency":194.716,"name":"重庆"},{"latency":160.853,"name":"南京"},{"latency":209.71,"name":"长春"},{"latency":190.649,"name":"福州"}];
+var map;
+function initMap(){
+    var mapProp = {
+        center:new google.maps.LatLng(34.58088499999999, 105.72498),
+        zoom:5,
+        mapTypeId:google.maps.MapTypeId.ROADMAP
+    };
+    map=new google.maps.Map(document.getElementById("googleMap"), mapProp);
+    process_ping_result();
+}
+
+
+function latency_color(latency){
+    if(latency<20){
+        return "#009933"
+    }
+    if(latency<50){
+        return "#86b300"
+    }
+    if(latency<100){
+        return "#669900"
+    }
+    if(latency<200){
+        return "#99cc00"
+    }
+    if(latency<300){
+        return "#b3b300"
+    }
+    if(latency<500){
+        return "#cc7a00"
+    }
+    return "#b32d00"
+}
+
+async function process_ping_result(){
+    for(let i=0;i<ping_result.length;i++){
+    for(let x=0;x<coordinates.length;x++){
+            if(ping_result[i].name===coordinates[x].name){
+                ping_result[i].coordinate=coordinates[x].coordinate;
+                let tmp=await blocker();
+                mark(ping_result[i].coordinate,`<span style="font-weight:bold">${ping_result[i].name}: <span style="color:${latency_color(ping_result[i].latency)}">${ping_result[i].latency}</span>ms</span>`);
+            }
+        }
+    }
+}
+
+function blocker(){
+    return new Promise(function(resolve,reject){
+        setTimeout(function(){
+            resolve(1)
+        },300)
+    })
+}
+
+
+function mark(coordinate,info){
+    var coordinate_obj=new google.maps.LatLng(coordinate);
+    // 生成一个标记
+    var marker=new google.maps.Marker({
+        position:coordinate_obj,
+    });
+
+    //生成一个信息窗口
+    var infowindow = new google.maps.InfoWindow({
+        content:info
+    });
+    //在地图上画出标记
+    marker.setMap(map);
+    //在标记上打开信息窗口
+    infowindow.open(map,marker);
+}
+
+function addressToGeo(location){
+    return new Promise(function(resolve,reject){
+        $.ajax({
+            url:`https://maps.googleapis.com/maps/api/geocode/json?address=${location}&key=${api_key}`,
+            method:'GET',
+            success:function(response){
+                resolve(response.results[0].geometry.location)
+            },
+            error:function(err){
+                reject(err.message)
+            }
+        })
+    })
+}
+
+
+
+</script>
+
+<script src="https://maps.googleapis.com/maps/api/js?key=AIzaSyCAr0SYZ3yV8Iwm0WyyQ1dArg1TYgA-Pv0&callback=initMap" defer async></script>
+</body>
+</html>
