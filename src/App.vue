@@ -15,6 +15,9 @@ td:hover>#urls{
 #map{
     height: 800px
 }
+footer{
+    padding:3em 0;
+}
 </style>
 
 <template>
@@ -253,6 +256,10 @@ td:hover>#urls{
         <div class="ui divider"></div>
         <div class="ui segment" id="map"></div>
     </div>
+    <footer class="ui container">
+        <div class="ui divider"></div>
+        <p>Made with <i class="ui red heart icon"></i> by WangFei</p>
+    </footer>
 </div>
 </template>
 
