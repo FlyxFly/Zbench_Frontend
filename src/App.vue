@@ -258,7 +258,7 @@ footer{
     </div>
     <footer class="ui container">
         <div class="ui divider"></div>
-        <p>Made with <i class="ui red heart icon"></i> by WangFei</p>
+        <p>Made with <i class="ui red heart icon"></i> by kiwi</p>
     </footer>
 </div>
 </template>

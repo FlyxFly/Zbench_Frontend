@@ -1,21 +1,14 @@
 import App from './App.vue';
-const bench_data=require('./data.json');
-
 
 let root_div=document.createElement('div');
 root_div.id='app';
-if('serviceWorker' in navigator){
-    window.addEventListener('load',function(){
-        navigator.serviceWorker.register('./service-worker.js')
-        .then(registration=>{
-            console.log('service worker registered')
-        }).catch(error=>{
-            console.log('service worker register error')
-        })
-    })
-}
+
+let map_script=document.createElement('script');
+map_script.src="https://maps.googleapis.com/maps/api/js?key=AIzaSyCAr0SYZ3yV8Iwm0WyyQ1dArg1TYgA-Pv0&callback=initMap";
+map_script.defer="true";
 
 document.getElementsByTagName('body')[0].append(root_div);
+document.getElementsByTagName('body')[0].append(map_script);
 
 window.myapp=new Vue({
     el:'#app',
