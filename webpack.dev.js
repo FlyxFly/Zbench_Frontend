@@ -10,6 +10,7 @@ const devConfig={
         port: 9000,
         open:true
     },
+    plugins:[]
 }
 
 

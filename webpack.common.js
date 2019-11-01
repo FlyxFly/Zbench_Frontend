@@ -1,14 +1,16 @@
 const path=require('path');
 const webpack=require('webpack');
-const VueLoaderPlugin = require('vue-loader/lib/plugin')
-const UglifyJsPlugin = require('uglifyjs-webpack-plugin')
+const VueLoaderPlugin = require('vue-loader/lib/plugin');
+const UglifyJsPlugin = require('uglifyjs-webpack-plugin');
+const {CleanWebpackPlugin}=require('clean-webpack-plugin');
+const HtmlWebpackPlugin=require('html-webpack-plugin');
 module.exports={
     entry: {
         'bundle': path.resolve(__dirname,'src/index.js'),
         vendor: ['jquery' ,'vue']
     },
     output:{
-        filename:'[name].js',
+        filename:'[name].[hash].js',
         path: path.resolve(__dirname,'dist')
     },
     module: {
@@ -31,6 +33,11 @@ module.exports={
             'window.Vue': 'vue',
         }),
         new VueLoaderPlugin(),
+        new CleanWebpackPlugin(),
+        new HtmlWebpackPlugin({
+            filename:'index.html',
+            template:'./src/index.html'
+        })
 
     ],
     optimization: {
